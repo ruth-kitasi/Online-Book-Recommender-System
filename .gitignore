@@ -1,0 +1,2 @@
+# Ignore pickle files (models & large data)
+*.pkl
