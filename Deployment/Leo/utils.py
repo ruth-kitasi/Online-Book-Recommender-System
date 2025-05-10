@@ -18,6 +18,12 @@ with open("data/merged_df.pkl", "rb") as f:
 with open("data/books_df.pkl", "rb") as f:
     books_df = pickle.load(f)
 
+with open("data/user_cf_trainset.pkl", "rb") as f:
+    user_cf_trainset = pickle.load(f)
+
+#load content_model_data
+content_model_data = books_df[['Book-Title', 'Book-Author', 'Publisher']].copy()
+
 
 # --- Utility Function ---
 def clean_title(title):
@@ -74,7 +80,7 @@ def get_top_n_user_cf(user_id, n=5):
     rated_items = set(j for (j, _) in user_cf_trainset.ur[inner_uid])
     unseen_items = set(user_cf_trainset.all_items()) - rated_items
 
-    predictions = [user_cf_model.predict(user_id, user_cf_trainset.to_raw_iid(i)) for i in unseen_items]
+    predictions = [svd_model.predict(user_id, user_cf_trainset.to_raw_iid(i)) for i in unseen_items]
     top_n = sorted(predictions, key=lambda x: x.est, reverse=True)
 
     result = []
