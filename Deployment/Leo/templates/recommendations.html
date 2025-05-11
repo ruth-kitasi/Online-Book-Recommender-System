@@ -1,0 +1,22 @@
+<!-- templates/recommendations.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Recommendations</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h2>Recommended Books</h2>
+    {% if recommendations %}
+        <ul class="recommendation-list">
+            {% for book in recommendations %}
+                <li>{{ book }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No recommendations found.</p>
+    {% endif %}
+    <a href="/" class="back-link">&#8592; Back</a>
+</body>
+</html>

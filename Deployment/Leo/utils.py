@@ -1,4 +1,4 @@
-import pickle,pandas as pd
+import re, pickle,pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 
 # --- Load models, dataframes, and matrices ---
@@ -26,9 +26,13 @@ content_model_data = books_df[['Book-Title', 'Book-Author', 'Publisher']].copy()
 
 
 # --- Utility Function ---
-def clean_title(title):
-    """Cleans book titles by removing 'A Novel' and extra whitespace."""
+"""def clean_title(title):
+   # Cleans book titles by removing 'A Novel' and extra whitespace
     return title.lower().replace("a novel", "").strip()
+"""
+def clean_title(title):
+    title = re.sub(r':?\s*A Novel\b', '', title, flags=re.IGNORECASE)
+    return title.strip()
 
 # --- Preprocessing for Content-Based Filtering ---
 merged_df['Clean-Title'] = merged_df['Book-Title'].fillna('').apply(clean_title)
