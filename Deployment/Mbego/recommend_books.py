@@ -1,5 +1,3 @@
-# recommend_books.py
-
 import numpy as np
 import pandas as pd
 from fuzzywuzzy import process
@@ -58,23 +56,36 @@ def recommend_books(model):
     choice = input("Enter 1 or 2: ").strip()
 
     if choice == '1':
-        try:
-            user_input = input("Enter your User-ID: ").strip()
-            user_id = int(user_input)
-            recs = hybrid_recommend(user_id, model)
-            if recs.empty:
-                print("😕 You seem new. Try cold-start options.")
-                ask = input("Would you like to search by author or publisher? (a/p): ").strip().lower()
-                col = 'BookAuthor' if ask == 'a' else 'Publisher'
-                keyword = input(f"Enter {col}: ").strip().lower()
-                matches = model['book_meta'][model['book_meta'][col].str.lower().str.contains(keyword, na=False)]
-                print("\n📖 Based on your input, here are some suggestions:")
-                print(matches[['BookTitle', 'BookAuthor']].head(5))
-            else:
-                print("\n✅ Top Book Recommendations:")
-                print(recs[['Title', 'Author', 'Hybrid_Score']])
-        except:
-            print("❌ Invalid user ID.")
+        user_input = input("Enter your User-ID: ").strip()
+        if not user_input.isdigit():
+            print("❌ Invalid input. User ID should be numeric.")
+            return
+
+        user_id = int(user_input)
+        if user_id not in model['user_rated']:
+            print("🆕 New user detected! No prior history found.")
+            print("Try getting recommendations by author or publisher.")
+            ask = input("Would you like to search by author or publisher? (a/p): ").strip().lower()
+            col = 'BookAuthor' if ask == 'a' else 'Publisher'
+            keyword = input(f"Enter {col}: ").strip().lower()
+            matches = model['book_meta'][model['book_meta'][col].str.lower().str.contains(keyword, na=False)]
+            print("\n📖 Based on your input, here are some suggestions:")
+            print(matches[['BookTitle', 'BookAuthor']].head(5))
+            return
+
+        recs = hybrid_recommend(user_id, model)
+        if recs.empty:
+            print("😕 You seem new. Try cold-start options.")
+            ask = input("Would you like to search by author or publisher? (a/p): ").strip().lower()
+            col = 'BookAuthor' if ask == 'a' else 'Publisher'
+            keyword = input(f"Enter {col}: ").strip().lower()
+            matches = model['book_meta'][model['book_meta'][col].str.lower().str.contains(keyword, na=False)]
+            print("\n📖 Based on your input, here are some suggestions:")
+            print(matches[['BookTitle', 'BookAuthor']].head(5))
+        else:
+            print("\n✅ Top Book Recommendations:")
+            print(recs[['Title', 'Author', 'Hybrid_Score']])
+
     elif choice == '2':
         title = input("Enter a book title: ").strip()
         try:
