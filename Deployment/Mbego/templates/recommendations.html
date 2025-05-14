@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recommendations</title>
+</head>
+<body>
+    <h1>✅ Top Book Recommendations:</h1>
+    <ul>
+        {% for rec in recommendations %}
+            <li>{{ rec['Title'] }} by {{ rec['Author'] }} (Score: {{ rec['Hybrid_Score'] }})</li>
+        {% endfor %}
+    </ul>
+    <a href="/">Back to Home</a>
+</body>
+</html>
