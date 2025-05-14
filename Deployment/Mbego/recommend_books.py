@@ -25,7 +25,7 @@ def hybrid_recommend(user_id, model, n=5):
         candidate_vectors = model['content_features'][candidate_indices].toarray()
         content_scores = cosine_similarity([user_profile], candidate_vectors)[0]
     else:
-        content_scores = book_meta['Avg_Rating'].fillna(3.0).values if model['has_avg_rating'] else np.ones(len(candidates))
+        content_scores = book_meta['AvgRating'].fillna(3.0).values if model['has_avg_rating'] else np.ones(len(candidates))
 
     alpha = model['cf_weight'] if user_id in model['user_rated'] else 0.3
     hybrid_scores = alpha * cf_scores + (1 - alpha) * content_scores
@@ -33,21 +33,21 @@ def hybrid_recommend(user_id, model, n=5):
     top_indices = np.argsort(hybrid_scores)[-n:][::-1]
     return pd.DataFrame([{
         'ISBN': candidates[i],
-        'Title': book_meta.loc[candidates[i], 'Book-Title'],
-        'Author': book_meta.loc[candidates[i], 'Book-Author'],
+        'Title': book_meta.loc[candidates[i], 'BookTitle'],
+        'Author': book_meta.loc[candidates[i], 'BookAuthor'],
         'Hybrid_Score': round(hybrid_scores[i], 3)
     } for i in top_indices])
 
 def get_similar_books(title, model, top_n=5):
     book_meta = model['book_meta']
-    titles = book_meta['Book-Title'].dropna().unique()
+    titles = book_meta['BookTitle'].dropna().unique()
     match, _ = process.extractOne(title, titles)
-    matched_isbn = book_meta[book_meta['Book-Title'] == match].index[0]
+    matched_isbn = book_meta[book_meta['BookTitle'] == match].index[0]
     idx = list(book_meta.index).index(matched_isbn)
     book_vector = model['content_features'][idx]
-    distances, indices = model['knn'].kneighbors(book_vector, n_neighbors=top_n+1)
+    distances, indices = model['knn'].kneighbors(book_vector, n_neighbors=top_n + 1)
     similar_isbns = book_meta.iloc[indices[0][1:]]
-    return similar_isbns[['Book-Title', 'Book-Author']].reset_index(drop=True)
+    return similar_isbns[['BookTitle', 'BookAuthor']].reset_index(drop=True)
 
 def recommend_books(model):
     print("\n📚 Welcome to the Book Recommender!")
@@ -65,11 +65,11 @@ def recommend_books(model):
             if recs.empty:
                 print("😕 You seem new. Try cold-start options.")
                 ask = input("Would you like to search by author or publisher? (a/p): ").strip().lower()
-                col = 'Book-Author' if ask == 'a' else 'Publisher'
+                col = 'BookAuthor' if ask == 'a' else 'Publisher'
                 keyword = input(f"Enter {col}: ").strip().lower()
                 matches = model['book_meta'][model['book_meta'][col].str.lower().str.contains(keyword, na=False)]
                 print("\n📖 Based on your input, here are some suggestions:")
-                print(matches[['Book-Title', 'Book-Author']].head(5))
+                print(matches[['BookTitle', 'BookAuthor']].head(5))
             else:
                 print("\n✅ Top Book Recommendations:")
                 print(recs[['Title', 'Author', 'Hybrid_Score']])
