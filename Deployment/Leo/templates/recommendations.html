@@ -11,7 +11,10 @@
     {% if books %}
         <ul class="recommendation-list">
             {% for _, book in books.items() %}
-                <li>{{ book['Book-Title']  }}</li>
+                <li>
+                    <img src="{{ book['Image-URL-M'] }}" alt="Cover" style="height: 150px;"><br>
+                    {{ book['Book-Title']  }}
+                </li>
             {% endfor %}
         </ul>
     {% else %}

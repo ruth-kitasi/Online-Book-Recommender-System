@@ -15,7 +15,7 @@ def index():
     return render_template("index.html")
 
 
-"""from utils import hybrid_recommendation, fetch_book_details
+from utils import hybrid_recommendation, fetch_book_details
 
 @app.route("/recommend", methods=["POST"])
 def recommend():
@@ -25,17 +25,7 @@ def recommend():
     book_details = fetch_book_details(recs)
     book_details = book_details.reset_index(drop=True).to_dict(orient="index")
 
-    return render_template("recommendations.html", books=book_details)"""
-@app.route("/recommend", methods=["POST"])
-def recommend():
-    user_id = request.form.get("user_id")
-    title = request.form.get("favorite_book")
-    recs = hybrid_recommendation(user_id, title)
-
-    books = pd.DataFrame({"Book-Title": recs})
-    books = books.reset_index(drop=True).to_dict(orient="index")
-
-    return render_template("recommendations.html", books=books)
+    return render_template("recommendations.html", books=book_details)
 
 
 if __name__ == "__main__":

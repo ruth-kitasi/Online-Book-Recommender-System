@@ -186,4 +186,6 @@ def hybrid_recommendation(user_id, favorite_book_title=None, n_cf=3, n_content=2
 
 # --- Optional: Fetch Metadata (if used in app.py rendering) ---
 def fetch_book_details(book_titles):
-    return merged_df[merged_df['Book-Title'].isin(book_titles) & (merged_df['Missing_Metadata'] == False)]
+    books = pd.DataFrame({"Book-Title": book_titles})
+    details = books.merge(books_df[['Book-Title', 'Image-URL-M']], on="Book-Title", how="left")
+    return details
