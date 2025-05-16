@@ -1,4 +1,4 @@
-import re, pickle,pandas as pd
+import re, pickle, pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 
 # --- Load models, dataframes, and matrices ---
@@ -21,18 +21,14 @@ with open("data/books_df.pkl", "rb") as f:
 with open("data/user_cf_trainset.pkl", "rb") as f:
     user_cf_trainset = pickle.load(f)
 
-#load content_model_data
-content_model_data = books_df[['Book-Title', 'Book-Author', 'Publisher']].copy()
-
-
 # --- Utility Function ---
-"""def clean_title(title):
-   # Cleans book titles by removing 'A Novel' and extra whitespace
-    return title.lower().replace("a novel", "").strip()
-"""
 def clean_title(title):
     title = re.sub(r':?\s*A Novel\b', '', title, flags=re.IGNORECASE)
     return title.strip()
+
+# Load content_model_data
+content_model_data = books_df[['Book-Title', 'Book-Author', 'Publisher']].copy()
+content_model_data['Clean-Title'] = content_model_data['Book-Title'].fillna('').apply(clean_title)
 
 # --- Preprocessing for Content-Based Filtering ---
 merged_df['Clean-Title'] = merged_df['Book-Title'].fillna('').apply(clean_title)
@@ -78,6 +74,7 @@ def get_top_n_user_cf(user_id, n=5):
         inner_uid = user_cf_trainset.to_inner_uid(user_id)
     except ValueError:
         return []
+
     if inner_uid not in user_cf_trainset.ur or len(user_cf_trainset.ur[inner_uid]) == 0:
         return []
 
@@ -88,10 +85,14 @@ def get_top_n_user_cf(user_id, n=5):
     top_n = sorted(predictions, key=lambda x: x.est, reverse=True)
 
     result = []
+    seen = set()
     for pred in top_n:
         book_row = merged_df[(merged_df['ISBN'] == pred.iid) & (merged_df['Missing_Metadata'] == False)]
         if not book_row.empty:
-            result.append(book_row.iloc[0]['Book-Title'])
+            title = book_row.iloc[0]['Book-Title']
+            if title not in seen:
+                seen.add(title)
+                result.append(title)
         if len(result) >= n:
             break
     return result
@@ -108,12 +109,14 @@ def recommend_books_content(title, n=5):
     similar_indices = sim_scores.argsort()[::-1][1:]
 
     recommended_books = []
+    seen = set()
     for i in similar_indices:
         row = content_model_data.iloc[i]
         title_candidate = row['Book-Title']
         meta_row = merged_df[(merged_df['Book-Title'] == title_candidate) & (merged_df['Missing_Metadata'] == False)]
-        if not meta_row.empty:
-            recommended_books.append(meta_row.iloc[0]['Book-Title'])
+        if not meta_row.empty and title_candidate not in seen:
+            seen.add(title_candidate)
+            recommended_books.append(title_candidate)
         if len(recommended_books) >= n:
             break
     return recommended_books
@@ -139,34 +142,39 @@ def recommend_popular_books(user_id=None, n=5):
         isbns = pop_overall
 
     recommended_books = []
+    seen = set()
     for isbn in isbns:
         book_row = merged_df[(merged_df['ISBN'] == isbn) & (merged_df['Missing_Metadata'] == False)]
         if not book_row.empty:
-            recommended_books.append(book_row.iloc[0]['Book-Title'])
+            title = book_row.iloc[0]['Book-Title']
+            if title not in seen:
+                seen.add(title)
+                recommended_books.append(title)
         if len(recommended_books) >= n:
             break
     return recommended_books
 
 # --- 4. Hybrid Recommendation ---
 def hybrid_recommendation(user_id, favorite_book_title=None, n_cf=3, n_content=2, n_popular=2):
+    total_needed = n_cf + n_content + n_popular
     recommendations = []
 
+    # --- CF-based Recommendations ---
     cf_recommendations = get_top_n_user_cf(user_id, n=n_cf)
     recommendations.extend(cf_recommendations)
-    got_cf = len(cf_recommendations) > 0
 
-    got_content = False
+    # --- Content-based Recommendations ---
     if favorite_book_title:
-        content_recs = recommend_books_content(favorite_book_title, n=n_content)
-        if content_recs:
-            recommendations.extend(content_recs)
-            got_content = True
+        content_recommendations = recommend_books_content(favorite_book_title, n=n_content)
+        recommendations.extend(content_recommendations)
 
-    if not got_cf or not got_content or len(recommendations) < (n_cf + n_content):
-        extra_needed = (n_cf + n_content + n_popular) - len(recommendations)
-        popular_recs = recommend_popular_books(user_id, n=extra_needed)
-        recommendations.extend(popular_recs)
+    # --- Fallback: Popular Recommendations ---
+    if len(set(recommendations)) < total_needed:
+        extra_needed = total_needed - len(set(recommendations))
+        popular_recommendations = recommend_popular_books(user_id, n=extra_needed)
+        recommendations.extend(popular_recommendations)
 
+    # --- Remove Duplicates ---
     seen = set()
     final_recommendations = []
     for book in recommendations:
@@ -174,8 +182,12 @@ def hybrid_recommendation(user_id, favorite_book_title=None, n_cf=3, n_content=2
             seen.add(book)
             final_recommendations.append(book)
 
-    return final_recommendations[:n_cf + n_content + n_popular]
+    return final_recommendations[:total_needed]
 
-# --- Optional: Fetch Metadata (if used in app.py rendering) ---
+# --- Fetch Metadata 
 def fetch_book_details(book_titles):
-    return merged_df[merged_df['Book-Title'].isin(book_titles) & (merged_df['Missing_Metadata'] == False)]
+    books = pd.DataFrame({"Book-Title": book_titles})
+    details = books.merge(books_df[['Book-Title', 'Image-URL-M','Book-Author','Year-Of-Publication','Publisher']], on="Book-Title", how="left")
+
+    
+    return details

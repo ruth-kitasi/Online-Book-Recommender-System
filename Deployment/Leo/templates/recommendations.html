@@ -4,14 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <title>Book Recommendations</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <h2>Recommended Books</h2>
-    {% if recommendations %}
+    {% if books %}
         <ul class="recommendation-list">
-            {% for book in recommendations %}
-                <li>{{ book }}</li>
+            {% for _, book in books.items() %}
+                <li>
+                    <img src="{{ book['Image-URL-M'] }}" alt="Cover" style="height: 150px;"><br>
+                    {{ book['Book-Title']  }}
+                    {{ book['Book-Author']  }}
+                    {{ book['Year-Of-Publication'] }}
+                    {{ book'Publisher'  }}
+                </li>
             {% endfor %}
         </ul>
     {% else %}
