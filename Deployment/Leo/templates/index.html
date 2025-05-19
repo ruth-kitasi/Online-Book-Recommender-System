@@ -1,10 +1,27 @@
 <!-- templates/index.html -->
-<form action="/recommend" method="post">
-    <label>User ID:</label>
-    <input type="text" name="user_id">
-    <br>
-    <label>Favorite Book Title:</label>
-    <input type="text" name="book_title">
-    <br>
-    <input type="submit" value="Get Recommendations">
-</form>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Recommendation App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div class="form-container">
+        <h2>Get Book Recommendations</h2>
+        <form action="/recommend" method="POST" class="recommendation-form">
+            <label for="user_id">User ID:</label>
+            <input type="text" name="user_id" id="user_id" placeholder="Enter your User ID" required>
+
+            <label for="favorite_book">Favorite Book:</label>
+            <input type="text" name="favorite_book" id="favorite_book" placeholder="Enter a favorite book" required>
+
+            <input type="submit" value="Recommend">
+        </form>
+
+        <a href="/test-files" class="back-link" target="_blank">Test File Loads</a>
+    </div>
+
+</body>
+</html>
