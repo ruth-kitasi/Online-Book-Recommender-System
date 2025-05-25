@@ -63,17 +63,18 @@
 </head>
 <body>
     <h1>📚 Welcome to the Book Recommender!</h1>
-    <h2>Choose an option:</h2>
+    <h2>Choose an option below:</h2>
 
     <form action="/recommend" method="POST">
-        <h3>Get book recommendations by User-ID</h3>
+        <h3>🔍 Get Book Recommendations by User ID</h3>
         <label for="user_id">Enter User ID:</label>
         <input type="text" id="user_id" name="user_id" required>
         <button type="submit">Get Recommendations</button>
+        <p><small>New users will receive popular book suggestions automatically.</small></p>
     </form>
 
     <form action="/similar" method="POST">
-        <h3>Find similar books by Book Title</h3>
+        <h3>📖 Find Similar Books by Title</h3>
         <label for="book_title">Enter Book Title:</label>
         <input type="text" id="book_title" name="book_title" required>
         <button type="submit">Find Similar Books</button>

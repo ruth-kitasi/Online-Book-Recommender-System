@@ -4,14 +4,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Similar Books</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fefefe;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            max-width: 600px;
+            margin: auto;
+        }
+
+        li {
+            background-color: #ecf0f1;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        a:hover {
+            background-color: #2980b9;
+        }
+    </style>
 </head>
 <body>
-    <h1>📚 Books similar to your choice:</h1>
+    <h1>📚 Books Similar to Your Choice</h1>
+    
     <ul>
         {% for book in books %}
-            <li>{{ book['BookTitle'] }} by {{ book['BookAuthor'] }}</li>
+            <li><strong>{{ book['BookTitle'] }}</strong> by {{ book['BookAuthor'] }}</li>
         {% endfor %}
     </ul>
-    <a href="/">Back to Home</a>
+
+    <a href="/">⬅ Back to Home</a>
 </body>
 </html>
