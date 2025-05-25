@@ -2,7 +2,7 @@
 
 body {
     font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
+    background-color: #f9f9f9;
     padding: 2rem;
     margin: 0;
     color: #333;
@@ -10,7 +10,8 @@ body {
 
 h2 {
     color: #2c3e50;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
 }
 
 .recommendation-list {
@@ -19,17 +20,37 @@ h2 {
     margin: 0;
 }
 
-.recommendation-list li {
+.book-card {
+    display: flex;
+    align-items: flex-start;
     background-color: #fff;
-    margin: 0.5rem 0;
+    margin-bottom: 1rem;
     padding: 1rem;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    gap: 1rem;
+}
+
+.book-image img {
+    height: 150px;
+    border-radius: 4px;
+}
+
+.book-info h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+    color: #2c3e50;
+}
+
+.book-info p {
+    margin: 0.2rem 0;
+    font-size: 0.95rem;
 }
 
 .back-link {
-    display: inline-block;
-    margin-top: 1.5rem;
+    display: block;
+    margin-top: 2rem;
+    text-align: center;
     text-decoration: none;
     color: #007BFF;
     font-weight: bold;
@@ -37,4 +58,45 @@ h2 {
 
 .back-link:hover {
     text-decoration: underline;
+}
+
+/* Form styles */
+.form-container {
+    max-width: 400px;
+    margin: 3rem auto;
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.recommendation-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.recommendation-form label {
+    margin-top: 1rem;
+    font-weight: bold;
+}
+
+.recommendation-form input[type="text"],
+.recommendation-form input[type="submit"] {
+    padding: 0.6rem;
+    font-size: 1rem;
+    margin-top: 0.3rem;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+.recommendation-form input[type="submit"] {
+    background-color: #007BFF;
+    color: white;
+    cursor: pointer;
+    margin-top: 1.5rem;
+    transition: background-color 0.3s;
+}
+
+.recommendation-form input[type="submit"]:hover {
+    background-color: #0056b3;
 }

@@ -18,8 +18,8 @@ with open("data/merged_df.pkl", "rb") as f:
 with open("data/books_df.pkl", "rb") as f:
     books_df = pickle.load(f)
 
-with open("data/user_cf_trainset.pkl", "rb") as f:
-    user_cf_trainset = pickle.load(f)
+with open("data/cf_trainset.pkl", "rb") as f:
+    cf_trainset = pickle.load(f)
 
 # --- Utility Function ---
 def clean_title(title):
@@ -71,17 +71,17 @@ pop_by_city = (
 # --- 1. User-Based Collaborative Filtering ---
 def get_top_n_user_cf(user_id, n=5):
     try:
-        inner_uid = user_cf_trainset.to_inner_uid(user_id)
+        inner_uid = cf_trainset.to_inner_uid(user_id)
     except ValueError:
         return []
 
-    if inner_uid not in user_cf_trainset.ur or len(user_cf_trainset.ur[inner_uid]) == 0:
+    if inner_uid not in cf_trainset.ur or len(cf_trainset.ur[inner_uid]) == 0:
         return []
 
-    rated_items = set(j for (j, _) in user_cf_trainset.ur[inner_uid])
-    unseen_items = set(user_cf_trainset.all_items()) - rated_items
+    rated_items = set(j for (j, _) in cf_trainset.ur[inner_uid])
+    unseen_items = set(cf_trainset.all_items()) - rated_items
 
-    predictions = [svd_model.predict(user_id, user_cf_trainset.to_raw_iid(i)) for i in unseen_items]
+    predictions = [svd_model.predict(user_id, cf_trainset.to_raw_iid(i)) for i in unseen_items]
     top_n = sorted(predictions, key=lambda x: x.est, reverse=True)
 
     result = []
@@ -191,3 +191,14 @@ def fetch_book_details(book_titles):
 
     
     return details
+# Export loaded objects for testing
+__all__ = [
+    "hybrid_recommendation",
+    "fetch_book_details",
+    "svd_model",
+    "tfidf_matrix",
+    "indices",
+    "merged_df",
+    "books_df",
+    "cf_trainset"
+]

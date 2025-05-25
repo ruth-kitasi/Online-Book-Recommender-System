@@ -11,12 +11,16 @@
     {% if books %}
         <ul class="recommendation-list">
             {% for _, book in books.items() %}
-                <li>
-                    <img src="{{ book['Image-URL-M'] }}" alt="Cover" style="height: 150px;"><br>
-                    {{ book['Book-Title']  }}
-                    {{ book['Book-Author']  }}
-                    {{ book['Year-Of-Publication'] }}
-                    {{ book'Publisher'  }}
+                <li class="book-card">
+                    <div class="book-image">
+                        <img src="{{ book['Image-URL-M'] }}" alt="Cover">
+                    </div>
+                    <div class="book-info">
+                        <h3>{{ book['Book-Title'] }}</h3>
+                        <p><strong>Author:</strong> {{ book['Book-Author'] }}</p>
+                        <p><strong>Year:</strong> {{ book['Year-Of-Publication'] }}</p>
+                        <p><strong>Publisher:</strong> {{ book['Publisher'] }}</p>
+                    </div>
                 </li>
             {% endfor %}
         </ul>

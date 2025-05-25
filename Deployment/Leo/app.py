@@ -26,7 +26,22 @@ def recommend():
     book_details = book_details.reset_index(drop=True).to_dict(orient="index")
 
     return render_template("recommendations.html", books=book_details)
+@app.route("/test-files")
+def test_files():
+    from utils import svd_model, tfidf_matrix, indices, merged_df, books_df, cf_trainset
+
+    results = {
+        "SVD Model Loaded": isinstance(svd_model, object),
+        "TF-IDF Matrix Loaded": hasattr(tfidf_matrix, 'shape'),
+        "Indices Loaded": isinstance(indices, dict),
+        "Merged DataFrame Loaded": not merged_df.empty,
+        "Books DataFrame Loaded": not books_df.empty,
+        "Collaborative Trainset Loaded": hasattr(cf_trainset, 'all_users'),
+    }
+
+    return "<br>".join([f"{k}: {v}" for k, v in results.items()])
 
 
 if __name__ == "__main__":
     app.run(debug=True)
+
